@@ -49,7 +49,7 @@ const Header = () => {
         className="bg-white text-black p-2 h-10 rounded-lg"
         onClick={downloadCsvFile}
       >
-        <button>Download</button>
+        <button>Download 2</button>
       </div>
     </div>
   );
