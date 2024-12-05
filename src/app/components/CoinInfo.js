@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 
 const CoinInfo = () => {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id"); // Replace "bitcoin" with the correct key if needed
+  const id = searchParams.get("id");
   const [coin, setCoin] = useState();
 
   const currency = "USD";
