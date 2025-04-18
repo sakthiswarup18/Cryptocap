@@ -2,20 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light & dark CSS variables */
 :root {
-  --background: #14161a;
-  --foreground: #fff;
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --background-dark: #0a0a0a;
+  --foreground-dark: #ededed;
+  --foreground33-light: rgba(0,0,0,0.2);
+  --foreground33-dark: rgba(237,237,237,0.2);
+
+  /* default (light) */
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+  --foreground33: var(--foreground33-light);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  --foreground33: var(--foreground33-dark);
 }
 
 body {
-  color: var(--foreground);
   background: var(--background);
+  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }

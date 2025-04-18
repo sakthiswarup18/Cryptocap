@@ -1,160 +1,169 @@
+// src/app/components/CoinListData.js
 "use client";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale, // Ensure CategoryScale is imported
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { chartDays } from "../config/data";
-import Test from "./Test";
-import ForceCast from "./ForceCast";
+import { useRouter } from "next/navigation";
 
-// Register the required components globally
-ChartJS.register(
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale, // Register the category scale
-  Tooltip,
-  Legend
-);
+const CoinListData = () => {
+  const router = useRouter();
+  const [coins, setCoins] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-const CoinGraph = ({ coinid }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [historicData, setHistoricData] = useState([]);
-  const [objprices, setPrices] = useState([]);
-  const [objmarket, setObjmarket] = useState([]);
-  const [objvolumes, setObjvolumes] = useState([]);
-
-  const [days, setDays] = useState(1 / 24);
-  const currency = "usd";
-
-  const tabs = [
-    "Price",
-    "Predicted Values Prices",
-    "Market Caps",
-    " Total Volumes",
-  ];
-
-  const fetchHistoricData = async () => {
-    try {
-      const response = await axios.get(
-        `https://api.coingecko.com/api/v3/coins/${coinid}/market_chart?vs_currency=usd&days=${days}`
-      );
-      console.log(response?.data);
-      setHistoricData(response?.data.prices);
-      setPrices(response?.data.prices);
-      setObjmarket(response?.data?.market_caps);
-      setObjvolumes(response?.data?.total_volumes);
-      setflag(true);
-    } catch (error) {
-      console.log("Error fetching historical data:", error);
-    }
-  };
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const coinsPerPage = 25;
 
   useEffect(() => {
-    if (coinid) {
-      fetchHistoricData();
-    }
-  }, [coinid, days]);
+    setLoading(true);
+    setError(null);
+
+    fetch("/api/coins")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setCoins(data))
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setError(err.message);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Filter + paginate
+  const filtered = coins.filter(
+    (c) =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.symbol.toLowerCase().includes(search.toLowerCase())
+  );
+  const totalPages = Math.ceil(filtered.length / coinsPerPage);
+  const start = (page - 1) * coinsPerPage;
+  const pageCoins = filtered.slice(start, start + coinsPerPage);
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-600">
+        ⚠️ Unable to load coins: {error}
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div>
-        <div>
-          <div className="flex border-b">
-            {tabs.map((tab, index) => (
-              <button
-                key={index}
-                className={`flex-1 py-2 text-center border-2 font-bold ${
-                  activeTab === index
-                    ? " bg-slate-200 text-black rounded-t-md"
-                    : "border-transparent hover:border-gray-300 "
-                }`}
-                onClick={() => setActiveTab(index)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className="p-4">
-            {activeTab === 0 && (
-              <div>
-                <Line
-                  data={{
-                    labels: historicData.map((coin) => {
-                      let date = new Date(coin[0]);
-                      let time =
-                        date.getHours() > 12
-                          ? `${date.getHours() - 12}:${date.getMinutes()} PM`
-                          : `${date.getHours()}:${date.getMinutes()} AM`;
-                      return days === 1 ? time : date.toLocaleDateString();
-                    }),
-
-                    datasets: [
-                      {
-                        data: historicData.map((coin) => coin[1]),
-                        label: `Price ( Past ${days} Days ) in ${currency}`,
-                        borderColor: "#EEBC1D",
-                      },
-                    ],
-                  }}
-                  options={{
-                    elements: {
-                      point: {
-                        radius: 1,
-                      },
-                    },
-                  }}
-                />
-                <div className="flex flex-row gap-5 justify-around">
-                  {chartDays.map((day) => (
-                    <button
-                      key={day.value}
-                      onClick={() => {
-                        setDays(day.value);
-                      }}
-                      className={`flex-1 p-3 rounded-lg border-2 transition-all duration-300 ${
-                        day.value === days
-                          ? "bg-yellow-500 text-black border-yellow-500 font-bold"
-                          : "bg-transparent text-white border-gray-500 hover:bg-yellow-500 hover:text-black"
-                      }`}
-                    >
-                      {day.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {activeTab === 1 && (
-              <div>
-                <ForceCast jsonData={objprices} name="Prices" />
-              </div>
-            )}
-            {activeTab === 2 && (
-              <div>
-                <ForceCast jsonData={objmarket} name="Market Caps" />
-              </div>
-            )}
-            {activeTab === 3 && (
-              <div>
-                <ForceCast jsonData={objvolumes} name="Total Volumes" />
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="text-end mr-4 mb-2">
+        <input
+          type="text"
+          placeholder="Search coin name or symbol"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          className="w-full max-w-xs p-3 rounded-md text-black"
+        />
       </div>
 
-      {/* <Test jsonData={objData} /> */}
-      {/* <ForceCast jsonData={objData} /> */}
+      {loading ? (
+        <div className="text-center py-8">Loading coins…</div>
+      ) : (
+        <>
+          <div className="overflow-x-auto p-4">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-yellow-400">
+                  <th className="border-b pl-4 text-left">#</th>
+                  <th className="border-b p-2 text-left">Coin</th>
+                  <th className="border-b p-2 text-left">Price</th>
+                  <th className="border-b p-2 text-left">24h Change</th>
+                  <th className="border-b p-2 text-left">Market Cap</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageCoins.map((c) => (
+                  <tr
+                    key={c.id}
+                    onClick={() => router.push(`/coininfo/?id=${c.id}`)}
+                    className="
+                      cursor-pointer
+                      hover:bg-gray-100 hover:text-black
+                      dark:hover:bg-gray-800 dark:hover:text-white
+                      transition-colors duration-150
+                    "
+                  >
+                    <td className="pl-3">{c.market_cap_rank}</td>
+                    <td className="p-2">
+                      <div className="flex items-center gap-4">
+                        <img src={c.image} alt={c.name} className="w-12 h-12" />
+                        <div>
+                          <div className="text-[18px] uppercase font-bold">
+                            {c.symbol}
+                          </div>
+                          <div className="text-[14px] text-gray-400">
+                            {c.name}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-2">
+                      ${Number(c.current_price).toFixed(2)}
+                    </td>
+                    <td
+                      className={`p-2 font-medium ${
+                        c.price_change_percentage_24h > 0
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {c.price_change_percentage_24h > 0 && "+"}
+                      {c.price_change_percentage_24h.toFixed(2)}%
+                    </td>
+                    <td className="p-2">
+                      ${String(c.market_cap).slice(0, -6)}M
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setPage(i + 1)}
+                className={`px-3 py-1 border rounded ${
+                  page === i + 1
+                    ? "bg-yellow-500 text-black font-bold"
+                    : "hover:bg-yellow-300"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setPage((p) => Math.min(p + 1, totalPages))
+              }
+              disabled={page === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default CoinGraph;
+export default CoinListData;

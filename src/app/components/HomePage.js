@@ -8,9 +8,9 @@ const HomePage = () => {
   return (
     <div>
       <Header />
-      <div>
-        <p className="p-3 text-start text-2xl text-bold">
-          Cryptocurrency Prices by Market Cap
+      <div className="p-4">
+        <p className="text-center text-2xl font-bold">
+          Cryptocurrency Prices by Market Capacity
         </p>
       </div>
       <CoinListData />

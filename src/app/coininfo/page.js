@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
-import Header from "../components/Header";
-import CoinInfo from "../components/CoinInfo";
+import React, { Suspense } from 'react';
+import Header from '../components/Header';
+import CoinInfo from '../components/CoinInfo';
 
 const page = () => {
   return (

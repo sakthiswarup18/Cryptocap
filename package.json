@@ -6,17 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "chart.js": "^4.4.9",
+    "file-saver": "^2.0.5",
+    "holtwinters": "^0.0.1",
+    "jspdf": "^3.0.1",
     "matplotlib": "^1.0.0",
     "next": "15.0.3",
+    "nodemailer": "^6.10.1",
     "plotly": "^1.0.6",
     "react": "^18.3.1",
-    "react-chartjs-2": "^5.2.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.1",
     "sklearn": "^1.0.0",
+    "swr": "^2.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const ProcessDataComponent = ({ jsonData }) => {
   const [predictedPrices, setPredictedPrices] = useState(null);
@@ -8,7 +8,7 @@ const ProcessDataComponent = ({ jsonData }) => {
   // Process and predict values for each dataset
   const processAndPredict = (data) => {
     if (!data || data.length < 2) {
-      console.log("Insufficient or invalid data.");
+      console.log('Insufficient or invalid data.');
       return null;
     }
 
@@ -20,7 +20,7 @@ const ProcessDataComponent = ({ jsonData }) => {
       const sumY = data.reduce((acc, curr) => acc + (curr[1] || 0), 0);
       const sumXY = data.reduce(
         (acc, curr) => acc + (curr[0] || 0) * (curr[1] || 0),
-        0
+        0,
       );
       const sumX2 = data.reduce((acc, curr) => acc + (curr[0] || 0) ** 2, 0);
 
@@ -36,7 +36,7 @@ const ProcessDataComponent = ({ jsonData }) => {
 
       return [nextX, nextY];
     } catch (error) {
-      console.error("Error processing data:", error);
+      console.error('Error processing data:', error);
       return null;
     }
   };
@@ -61,7 +61,7 @@ const ProcessDataComponent = ({ jsonData }) => {
         <h2>Predicted Price</h2>
         {predictedPrices ? (
           <p>
-            Next Predicted Price:{" "}
+            Next Predicted Price:{' '}
             {`[${predictedPrices[0]}, ${predictedPrices[1]}]`}
           </p>
         ) : (
@@ -72,7 +72,7 @@ const ProcessDataComponent = ({ jsonData }) => {
         <h2>Predicted Total Volume</h2>
         {predictedVolumes ? (
           <p>
-            Next Predicted Total Volume:{" "}
+            Next Predicted Total Volume:{' '}
             {`[${predictedVolumes[0]}, ${predictedVolumes[1]}]`}
           </p>
         ) : (
@@ -83,7 +83,7 @@ const ProcessDataComponent = ({ jsonData }) => {
         <h2>Predicted Market Cap</h2>
         {predictedMarketCaps ? (
           <p>
-            Next Predicted Market Cap:{" "}
+            Next Predicted Market Cap:{' '}
             {`[${predictedMarketCaps[0]}, ${predictedMarketCaps[1]}]`}
           </p>
         ) : (

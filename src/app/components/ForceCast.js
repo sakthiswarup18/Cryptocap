@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
+import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,7 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
+} from 'chart.js';
 
 // Register Chart.js components
 ChartJS.register(
@@ -17,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const ForceCast = ({ jsonData, name }) => {
@@ -26,7 +26,7 @@ const ForceCast = ({ jsonData, name }) => {
   // Process and predict values for each dataset
   const processAndPredict = (data) => {
     if (!data || data.length < 2) {
-      console.log("Insufficient or invalid data.");
+      console.log('Insufficient or invalid data.');
       return null;
     }
 
@@ -38,7 +38,7 @@ const ForceCast = ({ jsonData, name }) => {
       const sumY = data.reduce((acc, curr) => acc + (curr[1] || 0), 0);
       const sumXY = data.reduce(
         (acc, curr) => acc + (curr[0] || 0) * (curr[1] || 0),
-        0
+        0,
       );
       const sumX2 = data.reduce((acc, curr) => acc + (curr[0] || 0) ** 2, 0);
 
@@ -54,7 +54,7 @@ const ForceCast = ({ jsonData, name }) => {
 
       return [nextX, nextY];
     } catch (error) {
-      console.error("Error processing data:", error);
+      console.error('Error processing data:', error);
       return null;
     }
   };
@@ -73,12 +73,12 @@ const ForceCast = ({ jsonData, name }) => {
     labels: predictions ? Object.keys(predictions) : [],
     datasets: [
       {
-        label: "Predicted Values",
+        label: 'Predicted Values',
         data: predictions
           ? Object.values(predictions).map((item) => (item ? item[1] : 0))
           : [],
-        backgroundColor: ["#8884d8", "#82ca9d", "#ff7300"],
-        borderColor: ["#8884d8", "#82ca9d", "#ff7300"],
+        backgroundColor: ['#8884d8', '#82ca9d', '#ff7300'],
+        borderColor: ['#8884d8', '#82ca9d', '#ff7300'],
         borderWidth: 1,
       },
     ],
@@ -90,7 +90,7 @@ const ForceCast = ({ jsonData, name }) => {
     plugins: {
       title: {
         display: true,
-        text: "Predicted Data",
+        text: 'Predicted Data',
       },
       tooltip: {
         enabled: true,
@@ -100,13 +100,13 @@ const ForceCast = ({ jsonData, name }) => {
       x: {
         title: {
           display: true,
-          text: "Categories",
+          text: 'Categories',
         },
       },
       y: {
         title: {
           display: true,
-          text: "Predicted Values",
+          text: 'Predicted Values',
         },
         beginAtZero: true,
       },
@@ -122,7 +122,7 @@ const ForceCast = ({ jsonData, name }) => {
         {predictions ? (
           Object.entries(predictions).map(([key, value]) => (
             <p key={key} className="text-lg py-2">
-              {key}: {value ? `$ ${value[1]}` : "No prediction"}
+              {key}: {value ? `$ ${value[1]}` : 'No prediction'}
             </p>
           ))
         ) : (
@@ -131,7 +131,7 @@ const ForceCast = ({ jsonData, name }) => {
       </div>
 
       {/* Chart */}
-      <div style={{ width: "100%", height: "400px", marginBottom: "30px" }}>
+      <div style={{ width: '100%', height: '400px', marginBottom: '30px' }}>
         <Bar data={chartData} options={chartOptions} />
       </div>
 
